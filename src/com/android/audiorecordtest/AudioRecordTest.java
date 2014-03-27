@@ -108,12 +108,13 @@ public class AudioRecordTest extends Activity
             	lflag=!lflag;
             	if (lflag) {
 					MaxAmplitude1=0;
+		            setText("正在录音，，，");
 				}
             }
         };
         public LisentButton(Context ctx) {
             super(ctx);
-            setText("Lisent");
+            setText("开始录音，，，");
             setOnClickListener(clicker);
         }
     }
