@@ -1,6 +1,7 @@
 package com.android.audiorecordtest;
 
 import android.app.Activity;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.os.Bundle;
@@ -20,10 +21,18 @@ public class AudioRecordTest extends Activity
     private static String mFileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/audiorecordtest.3gp";
 
     private RecordButton mRecordButton = null;
+    private StopButton stopButton = null;
     private MediaRecorder mRecorder = null;
     
     private TextView tv=null;
 	private Timer mTimer=null;
+	
+	double a=22,b=1.2,c=0,d=28,e=0;
+	
+	
+	boolean flag=true;
+	
+	EditText e1=null,e2=null,e3=null,e4=null,e5=null;
 	
     private void startRecording() {							//开始录音，对mRecorder进行初始化
         mRecorder = new MediaRecorder();
@@ -49,6 +58,14 @@ public class AudioRecordTest extends Activity
         boolean mStartRecording = true;
         OnClickListener clicker = new OnClickListener() {
             public void onClick(View v) {
+            	
+            	a=Double.parseDouble(e1.getText().toString());
+            	b=Double.parseDouble(e2.getText().toString());
+            	c=Double.parseDouble(e3.getText().toString());
+            	d=Double.parseDouble(e4.getText().toString());
+            	e=Double.parseDouble(e5.getText().toString());
+            	
+            	
                 if (mStartRecording) {
                 	startRecording();
                     setText("Stop recording");
@@ -65,6 +82,27 @@ public class AudioRecordTest extends Activity
             setOnClickListener(clicker);
         }
     }
+    
+
+    class StopButton extends Button {	
+        OnClickListener clicker = new OnClickListener() {
+            public void onClick(View v) {
+            	
+                if (flag) {
+                	flag=false;
+                    setText("Start");
+                } else {
+                	flag=true;
+                    setText("Stop");
+                }
+            }
+        };
+        public StopButton(Context ctx) {
+            super(ctx);
+            setText("Stop");
+            setOnClickListener(clicker);
+        }
+    }
 
     @Override
     public void onCreate(Bundle icicle) {					//Activity的初始化，为界面添加mRecordButton和TextView
@@ -77,6 +115,16 @@ public class AudioRecordTest extends Activity
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 0));
+        
+
+        stopButton = new StopButton(this);
+        ll.addView(stopButton,
+            new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                0));
+        
+        
         tv=new TextView(this);
         tv.setTextSize(35);
         ll.addView(tv,
@@ -84,7 +132,68 @@ public class AudioRecordTest extends Activity
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         0));
+        
+
+        
+
+        
+        
+        e1=new EditText(this);
+        e2=new EditText(this);
+        e3=new EditText(this);
+        e4=new EditText(this);
+        e5=new EditText(this);
+        
+        e1.setTextSize(30);
+        e2.setTextSize(30);
+        e3.setTextSize(30);
+        e4.setTextSize(30);
+        e5.setTextSize(30);
+        
+        e1.setText(a+"");
+        e2.setText(b+"");
+        e3.setText(c+"");
+        e4.setText(d+"");
+        e5.setText(e+"");
+        
+
+        ll.addView(e1,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        0));
+        
+
+        ll.addView(e2,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        0));
+        
+
+        ll.addView(e3,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        0));
+        
+
+        ll.addView(e4,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        0));
+        
+
+        ll.addView(e5,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        0));
+        
         setContentView(ll);
+        
+        
     }
 
     @Override
@@ -98,17 +207,19 @@ public class AudioRecordTest extends Activity
 	            	double MaxAmplitude=mRecorder.getMaxAmplitude();
 	            	
 	            	//因为手机并非为专业的分贝仪，所以需要经过大幅度改变才能接近真实值 dB = 22*Math.log10((获得的振幅)^1.4)-23
-	            	tv.setText(22*Math.log10(Math.pow(MaxAmplitude,1.4))-23+"");
+	            	tv.setText(a*Math.log10(Math.pow(MaxAmplitude,b))+c+"");
 	            	
 	            	//这个是经过小幅度的公式 dB = 31*Math.log10(获得的振幅)-25
-	            	tv.setText(tv.getText()+"\n\n"+(31*Math.log10(MaxAmplitude)-25+""));
+	            	tv.setText(tv.getText()+"\n\n"+(d*Math.log10(MaxAmplitude)+e+""));
 				}
 			}
 		};
         mTimer = new Timer();  								//定时器，实现每0.5秒调用一次后台线程更新数据
 		mTimer.schedule(new TimerTask() {    
             public void run() {
-            	runOnUiThread(runnable);
+            	if (flag) {
+                	runOnUiThread(runnable);
+				}
             }
         }, 500,500);
 		super.onStart();
