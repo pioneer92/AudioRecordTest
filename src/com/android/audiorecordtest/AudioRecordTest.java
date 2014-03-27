@@ -160,11 +160,11 @@ public class AudioRecordTest extends Activity
         e4=new EditText(this);
         e5=new EditText(this);
         
-        e1.setTextSize(30);
-        e2.setTextSize(30);
-        e3.setTextSize(30);
-        e4.setTextSize(30);
-        e5.setTextSize(30);
+        e1.setTextSize(25);
+        e2.setTextSize(25);
+        e3.setTextSize(25);
+        e4.setTextSize(25);
+        e5.setTextSize(25);
         
         e1.setText(a+"");
         e2.setText(b+"");
