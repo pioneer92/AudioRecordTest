@@ -23,14 +23,16 @@ public class AudioRecordTest extends Activity
     private RecordButton mRecordButton = null;
     private StopButton stopButton = null;
     private MediaRecorder mRecorder = null;
+    private LisentButton lisentButton=null;
+    
+    double MaxAmplitude1=1;
     
     private TextView tv=null;
 	private Timer mTimer=null;
 	
 	double a=22,b=1.2,c=0,d=28,e=0;
 	
-	
-	boolean flag=true;
+	boolean flag=true,lflag=false;
 	
 	EditText e1=null,e2=null,e3=null,e4=null,e5=null;
 	
@@ -58,14 +60,11 @@ public class AudioRecordTest extends Activity
         boolean mStartRecording = true;
         OnClickListener clicker = new OnClickListener() {
             public void onClick(View v) {
-            	
             	a=Double.parseDouble(e1.getText().toString());
             	b=Double.parseDouble(e2.getText().toString());
             	c=Double.parseDouble(e3.getText().toString());
             	d=Double.parseDouble(e4.getText().toString());
             	e=Double.parseDouble(e5.getText().toString());
-            	
-            	
                 if (mStartRecording) {
                 	startRecording();
                     setText("Stop recording");
@@ -83,7 +82,6 @@ public class AudioRecordTest extends Activity
         }
     }
     
-
     class StopButton extends Button {	
         OnClickListener clicker = new OnClickListener() {
             public void onClick(View v) {
@@ -100,6 +98,22 @@ public class AudioRecordTest extends Activity
         public StopButton(Context ctx) {
             super(ctx);
             setText("Stop");
+            setOnClickListener(clicker);
+        }
+    }    
+    
+    class LisentButton extends Button {	
+        OnClickListener clicker = new OnClickListener() {
+            public void onClick(View v) {
+            	lflag=!lflag;
+            	if (lflag) {
+					MaxAmplitude1=0;
+				}
+            }
+        };
+        public LisentButton(Context ctx) {
+            super(ctx);
+            setText("Lisent");
             setOnClickListener(clicker);
         }
     }
@@ -124,19 +138,21 @@ public class AudioRecordTest extends Activity
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 0));
         
+        lisentButton=new LisentButton(this);
+        ll.addView(lisentButton,
+                new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    0));
+        
         
         tv=new TextView(this);
-        tv.setTextSize(35);
+        tv.setTextSize(30);
         ll.addView(tv,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         0));
-        
-
-        
-
-        
         
         e1=new EditText(this);
         e2=new EditText(this);
@@ -202,15 +218,25 @@ public class AudioRecordTest extends Activity
 			@Override
 			public void run() {
 				if (mRecorder!=null) {	
-					
 					//通过getMaxAmplitude()方法获得当前声音的振幅，利用公式 dB = 20*Math.log10(获得的振幅) 得到声音的分贝
 	            	double MaxAmplitude=mRecorder.getMaxAmplitude();
+
+	            	//这个是经过小幅度的公式 dB = 31*Math.log10(获得的振幅)-25
+	            	tv.setText(20*Math.log10(MaxAmplitude)+"");
 	            	
 	            	//因为手机并非为专业的分贝仪，所以需要经过大幅度改变才能接近真实值 dB = 22*Math.log10((获得的振幅)^1.4)-23
-	            	tv.setText(a*Math.log10(Math.pow(MaxAmplitude,b))+c+"");
+	            	tv.setText(tv.getText()+"\n\n"+(a*Math.log10(Math.pow(MaxAmplitude,b))+c)+"");
 	            	
 	            	//这个是经过小幅度的公式 dB = 31*Math.log10(获得的振幅)-25
 	            	tv.setText(tv.getText()+"\n\n"+(d*Math.log10(MaxAmplitude)+e+""));
+	            	
+	            	
+	            	if(lflag){
+	            		MaxAmplitude1=MaxAmplitude1>MaxAmplitude?MaxAmplitude1:MaxAmplitude;
+	            	}
+	            	else {
+						lisentButton.setText("最大分贝为："+20*Math.log10(MaxAmplitude1));
+					}
 				}
 			}
 		};
